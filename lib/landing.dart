@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'API.dart';
+import 'dart:convert';
 
 class MyLandingPage extends StatefulWidget {
   MyLandingPage();
@@ -10,6 +12,10 @@ class MyLandingPage extends StatefulWidget {
 class _MyLandingPageState extends State<MyLandingPage>
     with SingleTickerProviderStateMixin {
   TabController controller;
+
+  String url;
+  var Data;
+  String QueryText = '';
 
   @override
   void initState() {
@@ -63,18 +69,31 @@ class _MyLandingPageState extends State<MyLandingPage>
                     color: Colors.grey.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10.0)),
                 child: TextField(
+                  onChanged: (value) {
+                    url = 'http://10.0.2.2:5000/api?Query=' + value.toString();
+                  },
                   decoration: InputDecoration(
-                      hintText: 'Search',
-                      hintStyle: TextStyle(fontSize: 14.0),
-                      border: InputBorder.none,
-                      fillColor: Colors.grey.withOpacity(0.5),
-                      prefixIcon: Icon(Icons.search, color: Colors.grey)),
+                    hintText: 'Search',
+                    suffixIcon: GestureDetector(
+                        onTap: () async {
+                          Data = await Getdata(url);
+                          var DecodedData = jsonDecode(Data);
+                          setState(() {
+                            QueryText = DecodedData['Search'];
+                          });
+                        },
+                        child: Icon(Icons.search)),
+                    hintStyle: TextStyle(fontSize: 14.0),
+                    border: InputBorder.none,
+                    fillColor: Colors.grey.withOpacity(0.5),
+                    // prefixIcon: Icon(Icons.search, color: Colors.grey)
+                  ),
                 ))),
         SizedBox(height: 10.0),
         Padding(
             padding: EdgeInsets.only(left: 15.0),
             child: Text(
-              'Get More out of LinkedIn:',
+              QueryText,
               style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
             )),
         SizedBox(height: 10.0),
